@@ -1,0 +1,13 @@
+{
+  "name": "wassila",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Wassila: digital platform for women in rural agricultural communities in Tunisia",
+  "scripts": {
+    "up": "docker compose up --build",
+    "up:fresh": "docker compose up --build -V",
+    "down": "docker compose down",
+    "logs": "docker compose logs -f"
+  },
+  "license": "UNLICENSED"
+}

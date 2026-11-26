@@ -1,0 +1,77 @@
+name: wassila
+
+services:
+  mongo:
+    image: mongo:8.2
+    # Single-node replica set: required later by mongot (vector search).
+    command: ["--replSet", "rs0", "--bind_ip_all"]
+    ports:
+      # Bound to localhost only so other machines cannot reach it.
+      - "127.0.0.1:${MONGO_PORT:-27018}:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      # Healthy only when this node is PRIMARY. If the replica set is not
+      # initialised yet, the first check initialises it and reports unhealthy.
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "--quiet",
+          "--eval",
+          "try { quit(rs.status().myState === 1 ? 0 : 1) } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }] }); quit(1) }"
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 10s
+
+  server:
+    build:
+      context: ./server
+      target: dev
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-debug}
+      PORT: "4000"
+      MONGODB_URI: mongodb://mongo:27017/${MONGO_DB_NAME:-wassila}?replicaSet=rs0
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+    ports:
+      - "${SERVER_PORT:-4000}:4000"
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/api/v1/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  client:
+    build:
+      context: ./client
+      target: dev
+    environment:
+      VITE_PROXY_TARGET: http://server:4000
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "${CLIENT_PORT:-5173}:5173"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      server:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
