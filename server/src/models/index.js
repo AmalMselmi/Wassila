@@ -27,3 +27,10 @@ export { default as Comment } from './Comment.js';
 export { default as ForumLike } from './ForumLike.js';
 export { default as ForumReport } from './ForumReport.js';
 export { default as AgriculturalResource } from './AgriculturalResource.js';
+
+export { default as AIConversation } from './AIConversation.js';
+export { default as AIMessage } from './AIMessage.js';
+export { default as AIUsage } from './AIUsage.js';
+export { default as AgriculturalKnowledgeDocument } from './AgriculturalKnowledgeDocument.js';
+export { default as KnowledgeChunk } from './KnowledgeChunk.js';
+export { default as AIListingDraft } from './AIListingDraft.js';
