@@ -1,6 +1,8 @@
 import mongoose from 'mongoose';
 import { env } from './env.js';
 import { logger } from '../utils/logger.js';
+// Registers all models so their indexes are built on connection (development only).
+import '../models/index.js';
 
 mongoose.set('strictQuery', true);
 
