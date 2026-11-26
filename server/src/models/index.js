@@ -21,3 +21,9 @@ export { default as SOSAlert } from './SOSAlert.js';
 export { default as LocationShare } from './LocationShare.js';
 export { default as TripReport } from './TripReport.js';
 export { default as Rating } from './Rating.js';
+
+export { default as ForumPost } from './ForumPost.js';
+export { default as Comment } from './Comment.js';
+export { default as ForumLike } from './ForumLike.js';
+export { default as ForumReport } from './ForumReport.js';
+export { default as AgriculturalResource } from './AgriculturalResource.js';
